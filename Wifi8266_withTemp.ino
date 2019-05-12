@@ -7,7 +7,7 @@
  *      Adafruit_Sensor.h
  *      Adafruit_BME280.h
  * 
- * -Ian Romano and Ahmad Tamali
+ * -Ian Romano and Ahmad Tamimi
  */
 
 #include "Arduino.h"
