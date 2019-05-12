@@ -31,11 +31,12 @@ Adafruit_BME280 bme; // I2C
 SoftwareSerial espSerial(10,11);
 
 String IO_USERNAME = "iromano"; //paste username here
-String IO_KEY = "77790223d6874d2d9fbdf5e738e3d948"; //paste key here
-String WIFI_SSID = "UD Devices"; //Only need to change if using other network, eduroam won't work
+String IO_KEY = "61a261551c6d4dd4a4535d0f3247c48e"; //paste key here
+String WIFI_SSID = "UD Devices";//"UD Devices"; //Only need to change if using other network, eduroam won't work
 String WIFI_PASS = ""; //Blank for open network
 
 int num = 1; //Counts up to show upload working
+float lastTemp = 0; //Flag used with LED logic to avoid quick-switching
 
 void setup() {
   Serial.begin(9600);
@@ -61,6 +62,9 @@ void setup() {
   bool status;
   status = bme.begin();
   Serial.println("------ Setup Complete ----------");
+
+  //Config Digital Pin 4 as output
+  pinMode(4, OUTPUT);
 }
 
 void loop() {
@@ -72,9 +76,19 @@ void loop() {
   Serial.println(num);
 
   Serial.print("Temperature = ");
-  float fTemp = bme.readTemperature() * (9.0/5.0) + 32;
+  //float fTemp = bme.readTemperature() - 1.897;
+  float fTemp = ((9.0 / 5.0) * (bme.readTemperature() - 1.897) + 32);
   Serial.print(fTemp);
   Serial.println(" *F");
+
+  if (fTemp != lastTemp) {
+      if (fTemp > 70) {
+        digitalWrite(4, HIGH);
+      } else {
+        digitalWrite(4, LOW);
+      }
+      lastTemp = fTemp;
+  }
 
   String resp = espData("send_data=1,"+String(fTemp),2000,false);
   //Serial.println("data1: "+resp);
